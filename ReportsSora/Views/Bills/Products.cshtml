@@ -1,0 +1,11 @@
+﻿@{
+    ViewData["Title"] = "Admision";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using DevExpress.AspNetCore
+<link rel="stylesheet" href="~/css/viewer.part.bundle.css" />
+<script src="~/js/viewer.part.bundle.js"></script>
+
+@model ReportsSora.Reports.xrProductInfo
+
+@Html.DevExpress().WebDocumentViewer("DocumentViewer").Height("1000px").Bind(Model)

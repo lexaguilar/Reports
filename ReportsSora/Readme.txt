@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext "Server=LEX-PC\PCLEX;Database=Sora ;User Id=sa;Password=123;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context  SoraContext -tables "Bills","Clients","Receipts","BillDetails","Products","Vendors","Apps","Products","Families","Presentations","Rates","Reports" -Force
