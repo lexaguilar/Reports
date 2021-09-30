@@ -60,7 +60,13 @@ namespace Clinicavalle.DbModels.Clinica
         public virtual DbSet<TwoFactorEntry> TwoFactorEntries { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Vendor> Vendors { get; set; }
-
+        public virtual DbSet<vwFacturasPendientes> vwFacturasPendientes { get; set; }
+        public virtual DbSet<vwRecords> vwRecords { get; set; }
+        public virtual DbSet<vwBills> vwBills { get; set; }
+        public virtual DbSet<vwItems> vwItems { get; set; }
+        public virtual DbSet<vwIntentario> vwIntentario { get; set; }
+        public virtual DbSet<vwValoracionAlmacen> vwValoracionAlmacen { get; set; }
+        public virtual DbSet<vwCompras> vwCompras { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "Modern_Spanish_CI_AS");

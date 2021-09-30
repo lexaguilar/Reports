@@ -8,6 +8,7 @@ using ReportsClinicaValle.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinicavalle.DbModels.Clinica;
 using ReportsClinicaValle.Services;
+using ReportsClinicaValle.ViewModels;
 
 namespace ReportsClinicaValle.Controllers
 {
@@ -55,5 +56,101 @@ namespace ReportsClinicaValle.Controllers
 
         }
 
+        public IActionResult BySeasion(DateTime from, DateTime to, string username)
+        {
+
+            IQueryable<vwBills> result = _db.vwBills.Where(x => x.Date > from && x.Date < to);
+
+            if (!string.IsNullOrEmpty(username))
+                result = result.Where(x => x.CreateBy == username);
+
+            var data = result.ToArray().Select(x => new BillsViewModels
+            {
+                Cliente = $"{x.Name} {x.LastName}",
+                Fecha = x.Date,
+                Referencia = x.Reference,
+                Factura =  x.Id.ToString().PadLeft(6,'0'),
+                SubTotal = x.SubTotal,
+                Descuento = x.Discount,
+                Total = x.Total
+            }).ToArray();
+
+            var report = new Reports.Bills.xrBillsBySeason()
+            {
+                DataSource = data
+            };
+
+            report.Parameters["search"].Value = $"Ventas realizadas entre el {from.ToString("dd-MM-yyyy")} y el {to.ToString("dd-MM-yyyy")}";
+            report.Parameters["search"].Visible = false;
+
+            var pdf = new PdfServices();
+
+            return pdf.ExportPdf(report);
+
+        }
+
+        public IActionResult Items(DateTime from, DateTime to)
+        {
+
+            var result = _db.vwItems.Where(x => x.Date > from && x.Date < to).ToArray();
+
+            var report = new Reports.Bills.xrItems()
+            {
+                DataSource = result
+            };
+
+            report.Parameters["search"].Value = $"Articulos vendidos entre el {from.ToString("dd-MM-yyyy")} y el {to.ToString("dd-MM-yyyy")}";
+            report.Parameters["search"].Visible = false;
+
+            var pdf = new PdfServices();
+
+            return pdf.ExportPdf(report);
+
+        }
+
+        public IActionResult Inventario(int? typeId)
+        {
+
+            IQueryable<vwIntentario> result = _db.vwIntentario.Where(x => x.TypeId != 4); //servicios
+
+            if (typeId.HasValue && typeId.Value > 0)
+                result = result.Where(x => x.TypeId == typeId.Value);
+
+            var data = result.Select(x => new InventarioViewModel {
+                Id = x.Id,
+                Nombre = x.Name,
+                PCompra = x.Cost,
+                IVA = 0,
+                PVP = x.Price,
+                Existencia = x.Stock,
+                Code = x.Code
+            }).ToArray();
+
+            var report = new Reports.Bills.xrInventario()
+            {
+                DataSource = data
+            };
+
+            var pdf = new PdfServices();
+
+            return pdf.ExportPdf(report);
+
+        }
+
+        public IActionResult Proveedores()
+        {
+
+            var result = _db.Providers.ToArray();         
+
+            var report = new Reports.Proveedores.xrProviders()
+            {
+                DataSource = result
+            };
+
+            var pdf = new PdfServices();
+
+            return pdf.ExportPdf(report);
+
+        }
     }
 }

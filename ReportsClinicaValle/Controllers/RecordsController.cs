@@ -8,6 +8,7 @@ using ReportsClinicaValle.Models;
 using Microsoft.EntityFrameworkCore;
 using Clinicavalle.DbModels.Clinica;
 using ReportsClinicaValle.Services;
+using ReportsClinicaValle.ViewModels;
 
 namespace ReportsClinicaValle.Controllers
 {
@@ -43,6 +44,33 @@ namespace ReportsClinicaValle.Controllers
             {
                 DataSource = result
             };
+
+            var pdf = new PdfServices();
+
+            return pdf.ExportPdf(report);
+
+        }
+
+        public IActionResult List(DateTime from, DateTime to)
+        {
+            var result = _db.vwRecords.Where(x => x.Date > from && x.Date < to).Select(x => new RecordsViewModel {
+                Nombre = $"{x.Name} {x.LastName}",
+                Fecha = x.Date,
+                Eje = $"{x.Axis}º" ,
+                Cilindro = x.Cylinder,
+                Esfera = x.Sphere,
+                AV = x.AVSC,
+                Addition = x.Addition,
+                OJO = x.Eye
+            }).ToArray();
+
+            var report = new Reports.Records.xrRecords()
+            {
+                DataSource = result
+            };            
+                
+            report.Parameters["search"].Value = $"Resultado entre el {from.ToString("dd-MM-yyyy")} y el {to.ToString("dd-MM-yyyy")}";
+            report.Parameters["search"].Visible = false;                
 
             var pdf = new PdfServices();
 
